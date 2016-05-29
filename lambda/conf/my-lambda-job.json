@@ -1,0 +1,5 @@
+{
+    "function_name": "my-job",
+    "handler": "main.do_stuff",
+    "description": "calls some api and returns the result"
+}
