@@ -1,5 +1,14 @@
 # boto3-based deployment for datapipes
 
+### toc
+
+- [iam](./iam/readme.md)
+- [lambda](./lambda/readme.md)
+
+
+
+### set up python packages fro deployment
+
 ```
 cd lambda
 pip install -r requirements.txt -t pkg

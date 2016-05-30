@@ -8,6 +8,7 @@ def do_stuff(event, context):
 
     return r.json()
 
+
 if __name__ == '__main__':
     r = do_stuff(0,0)
     print r
