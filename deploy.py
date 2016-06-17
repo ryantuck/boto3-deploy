@@ -13,6 +13,7 @@ def deploy():
     session = boto3.session.Session(profile_name='personal')
 
     deploy_iam_roles(session)
+    deploy_lambda_api(session)
     deploy_lambdas(session)
     clean_up()
 
@@ -130,6 +131,40 @@ def clean_up():
 
     for z in os.listdir('_deploy/_zip'):
         os.remove('_deploy/_zip/{}'.format(z))
+
+
+def deploy_lambda_api(session):
+
+    # TODO - add logic for if this already exists to just update it
+
+    client = session.client('apigateway')
+
+    print 'creating api for master lambda api'
+
+    with open('api-gateway/lambda-api/lambda-api.json') as f:
+        api_config = json.load(f)
+        r = client.create_rest_api(**api_config)
+        print r
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
