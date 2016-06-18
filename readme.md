@@ -7,7 +7,7 @@
 
 
 
-### set up python packages fro deployment
+### set up python packages for deployment
 
 ```
 cd lambda
@@ -23,3 +23,4 @@ pip install -r requirements.txt -t pkg
 - determine whether upload to s3 and lambda hookup is better than uploading zip
 - deploy all configs to dynamodb
 - add functionality for sns, sqs, api gateway
+- default methods for apis - get (for info), post (to start)
