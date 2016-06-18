@@ -50,6 +50,7 @@ def deploy_lambdas(session):
     for function_name in os.listdir('lambda/src'):
         generate_zip(function_name)
         deploy_lambda_function(session, function_name)
+        deploy_lambda_api_resource(session, function_name)
 
 
 def deploy_lambda_function(session, function_name):
@@ -136,32 +137,75 @@ def clean_up():
 def deploy_lambda_api(session):
 
     # TODO - add logic for if this already exists to just update it
+    # TODO - get top-level resource id from create call
 
     client = session.client('apigateway')
 
     print 'creating api for master lambda api'
 
+    try:
+
+        with open('api-gateway/lambda-api/lambda-api.json') as f:
+            api_config = json.load(f)
+            r = client.create_rest_api(**api_config)
+            print r
+
+    except:
+
+        print '\talready exists'
+
+
+def deploy_lambda_api_resource(session, lambda_name):
+
+    client = session.client('apigateway')
+
     with open('api-gateway/lambda-api/lambda-api.json') as f:
-        api_config = json.load(f)
-        r = client.create_rest_api(**api_config)
-        print r
+        api_cfg = json.load(f)
+
+    resources = client.get_resources(restApiId=api_cfg['id'])
+    parent_resource_id = [r for r in resources['items'] if r['path'] == '/'][0]['id']
+
+    print '\tcreating api resource for: {}'.format(lambda_name)
+
+    try:
+        client.create_resource(
+                restApiId=api_cfg['id'],
+                parentId=parent_resource_id,
+                pathPart=lambda_name)
+
+    except:
+        print '\t\talready exists'
+
+    deploy_lambda_api_resource_methods(
+            session,
+            lambda_name,
+            api_cfg['id'])
 
 
 
 
+def deploy_lambda_api_resource_methods(session, lambda_name, api_id):
 
+    client = session.client('apigateway')
 
+    print '\tcreating methods for resource'
 
+    resources = client.get_resources(restApiId=api_id)
+    resource_id = [
+            r for r in resources['items']
+            if r['path'] == '/{}'.format(lambda_name)
+            ][0]['id']
 
+    try:
+        client.put_method(
+                restApiId=api_id,
+                resourceId=resource_id,
+                httpMethod='POST',
+                authorizationType='')
 
+    except:
 
-
-
-
-
-
-
-
+        print '\t\talready exists'
 
 
 
